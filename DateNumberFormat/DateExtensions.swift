@@ -9,16 +9,16 @@
 import Foundation
 
 extension String {
+    
+    // Adds the string supplied to the left of the string until it meets the lenght specified, if the lenght passed is less than the size of the string, it will return a substring
     func psoStringByPaddingLeft(toLength length: Int, withString string: String) -> String {
         let padLength = length - self.characters.count
         guard padLength > -1 else {
-            return self.stringByPaddingToLength(length, withString: string, startingAtIndex: 0)
+            return self.substringToIndex(self.endIndex.advancedBy(padLength))
         }
-        
         
         return "".stringByPaddingToLength(padLength, withString: string, startingAtIndex: 0) + self
     }
-    
 }
 
 
