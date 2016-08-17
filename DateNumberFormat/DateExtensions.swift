@@ -33,10 +33,10 @@ public extension NSDate{
         let minutes = "\(components.minute)".psoStringByPaddingLeft(toLength: 2, withString: "0")
         let seconds = "\(components.second)".psoStringByPaddingLeft(toLength: 2, withString: "0")
         
-        let string = year + month + day + hour + minutes + seconds
+        let string = "1" + year + month + day + hour + minutes + seconds
         
-        guard string.characters.count == 14 else{
-            print("Incorrect number of characters in NSDate Number Format should be 14, currently: \(string.characters.count) string: \(string) original date:\(self)")
+        guard string.characters.count == 15 else{
+            print("Incorrect number of characters in NSDate Number Format should be 15, currently: \(string.characters.count) string: \(string) original date:\(self)")
             return nil
         }
         
@@ -46,12 +46,12 @@ public extension NSDate{
     static func psoDate(withNumberFormat numberFormat: Int, andCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate?{
         let string = String(numberFormat)
         
-        guard string.characters.count == 14 else{
+        guard string.characters.count == 15 else{
             print("Could not create date with number format, incorrect number of characters, need 14, supplied: \(string.characters.count) number:\(numberFormat)")
             return nil
         }
         
-        var startIndex = string.startIndex
+        var startIndex = string.startIndex.advancedBy(1)
         var endIndex = startIndex.advancedBy(4)
         let year = string.substringWithRange(startIndex ..< endIndex)
         
@@ -86,6 +86,6 @@ public extension NSDate{
         components.hour = hourNmbr
         components.minute = minuteNmbr
         components.second = secondNmbr
-        return NSCalendar.currentCalendar().dateFromComponents(components)
+        return calendar.dateFromComponents(components)
     }
 }

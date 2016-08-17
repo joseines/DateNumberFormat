@@ -30,6 +30,16 @@ class DateNumberFormatTests: XCTestCase {
     // Convierte la fecha en numero, después la vuelva a crear en fecha y verifica que sean igual hasta el segundo.
     func testGregorianCalendar(){
         guard let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian) else{
+            XCTFail("Could not create calendar")
+            return
+        }
+        
+        XCTAssert(test(withCalendar: calendar))
+    }
+    
+    func testChineseCalendar(){
+        guard let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierChinese) else{
+            XCTFail("Could not create calendar")
             return
         }
         
@@ -53,6 +63,7 @@ class DateNumberFormatTests: XCTestCase {
         ]
         
         var failedCalendars = [String]()
+        var passedCalendars = [String]()
         for identifier in identifierArray{
             guard let calendar = NSCalendar(calendarIdentifier: identifier) else{
                 failedCalendars.append(identifier)
@@ -62,10 +73,13 @@ class DateNumberFormatTests: XCTestCase {
             if test(withCalendar: calendar) == false{
                 failedCalendars.append(identifier)
             }
+            else{
+                passedCalendars.append(identifier)
+            }
         }
         
         if failedCalendars.count > 0 {
-            print("FAILED CALENDARS: \(failedCalendars)")
+            print("FAILED CALENDARS: \(failedCalendars)\n\nPASSED CALENDARS: \(passedCalendars)")
             XCTFail()
         }
         else{
@@ -76,6 +90,7 @@ class DateNumberFormatTests: XCTestCase {
     }
     
     func test(withCalendar calendar: NSCalendar) -> Bool{
+        
         let originalDate = NSDate()
         
         // CONVERTIR A NUMERO
@@ -84,8 +99,8 @@ class DateNumberFormatTests: XCTestCase {
         }
         
         
-        // CONVERTIR A FECHA DE REGRESO
-        guard let newDate = NSDate.psoDate(withNumberFormat: numberFormat) else{
+        // CONVERTIR A FECHA DE REGRESOx
+        guard let newDate = NSDate.psoDate(withNumberFormat: numberFormat, andCalendar: calendar) else{
             return false
         }
         
