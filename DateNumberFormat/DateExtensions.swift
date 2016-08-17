@@ -59,7 +59,7 @@ public extension NSDate{
         return Int(string)
     }
     
-    static func psoDate(withNumberFormat numberFormat: Int, andCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate?{
+    static func psoDate(withNumberFormat numberFormat: Int, withCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate?{
         let string = String(numberFormat)
         let characterCount = string.characters.count
         

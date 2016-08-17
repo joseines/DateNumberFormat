@@ -47,7 +47,7 @@ class DateNumberFormatTests: XCTestCase {
         }
         
         XCTAssert(originalDate.psoNumberFormat(withCalendar: otherCalendar, useOldFormat: true) == nil)
-        XCTAssert(NSDate.psoDate(withNumberFormat: numberFormat, andCalendar: otherCalendar) == nil)
+        XCTAssert(NSDate.psoDate(withNumberFormat: numberFormat, withCalendar: otherCalendar) == nil)
     }
     
     var calendarIdentifierArray: [String]{
@@ -115,7 +115,7 @@ class DateNumberFormatTests: XCTestCase {
         }
         
         // CONVERTIR A FECHA DE REGRESOx
-        guard let newDate = NSDate.psoDate(withNumberFormat: numberFormat, andCalendar: calendar) else{
+        guard let newDate = NSDate.psoDate(withNumberFormat: numberFormat, withCalendar: calendar) else{
             return false
         }
         
@@ -131,7 +131,41 @@ class DateNumberFormatTests: XCTestCase {
     func testPerformanceWithoutSupplyingCalendar() {
         // This is an example of a performance test case.
         self.measureBlock {
-            self.testAllCalendars()
+            for _ in 0 ... 1000 {
+                let originalDate = NSDate()
+                guard let numberFormat = originalDate.psoNumberFormat() else{
+                    XCTFail("Coult not create number format for date: \(originalDate)")
+                    return
+                }
+                
+                guard let _ = NSDate.psoDate(withNumberFormat: numberFormat) else{
+                    XCTFail("Could not create date from number format: \(numberFormat)")
+                    return
+                }
+            }
+        }
+    }
+    
+    func testPerformanceSupplyingCalendar() {
+        // This is an example of a performance test case.
+        self.measureBlock {
+            guard let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian) else {
+                XCTFail("Coult not create calendar")
+                return
+            }
+            
+            for _ in 0 ... 1000 {
+                let originalDate = NSDate()
+                guard let numberFormat = originalDate.psoNumberFormat(withCalendar: calendar) else{
+                    XCTFail("Coult not create number format for date: \(originalDate)")
+                    return
+                }
+                
+                guard let _ = NSDate.psoDate(withNumberFormat: numberFormat, withCalendar: calendar) else{
+                    XCTFail("Could not create date from number format: \(numberFormat)")
+                    return
+                }
+            }
         }
     }
     
