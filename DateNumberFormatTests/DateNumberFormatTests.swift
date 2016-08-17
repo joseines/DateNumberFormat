@@ -56,7 +56,7 @@ class DateNumberFormatTests: XCTestCase {
         for identifier in identifierArray{
             guard let calendar = NSCalendar(calendarIdentifier: identifier) else{
                 failedCalendars.append(identifier)
-                
+                continue
             }
             
             if test(withCalendar: calendar) == false{
