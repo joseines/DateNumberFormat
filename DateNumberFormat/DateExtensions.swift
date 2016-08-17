@@ -23,9 +23,18 @@ extension String {
 
 
 public extension NSDate{
-    func psoNumberFormat(withCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> Int?{
-        let components = calendar.components([.Day, .Month, .Year, .Hour, .Minute, .Second], fromDate: self)
+    func psoNumberFormat(withCalendar calendar: NSCalendar = NSCalendar.currentCalendar(), useOldFormat: Bool = false) -> Int?{
         
+        if useOldFormat {
+            guard calendar.calendarIdentifier == NSCalendarIdentifierGregorian else{
+                print("WARNING: Old Format only accepts gregorian calendar")
+                return nil
+            }            
+        }
+        
+        let components = calendar.components([.Era, .Year, .Day, .Month, .Hour, .Minute, .Second], fromDate: self)
+        
+        let era = "\(components.era)".psoStringByPaddingLeft(toLength: 3, withString: "0")
         let year = "\(components.year)".psoStringByPaddingLeft(toLength: 4, withString: "0")
         let month = "\(components.month)".psoStringByPaddingLeft(toLength: 2, withString: "0")
         let day = "\(components.day)".psoStringByPaddingLeft(toLength: 2, withString: "0")
@@ -33,10 +42,17 @@ public extension NSDate{
         let minutes = "\(components.minute)".psoStringByPaddingLeft(toLength: 2, withString: "0")
         let seconds = "\(components.second)".psoStringByPaddingLeft(toLength: 2, withString: "0")
         
-        let string = "1" + year + month + day + hour + minutes + seconds
+        let string: String
+        if useOldFormat{
+            string = year + month + day + hour + minutes + seconds
+        }
+        else{
+            string = "1" + era + year + month + day + hour + minutes + seconds
+        }
         
-        guard string.characters.count == 15 else{
-            print("Incorrect number of characters in NSDate Number Format should be 15, currently: \(string.characters.count) string: \(string) original date:\(self)")
+        let charsNeeded = (useOldFormat ? 14 : 18)
+        guard string.characters.count == charsNeeded else{
+            print("Incorrect number of characters in NSDate Number Format should be \(charsNeeded), currently: \(string.characters.count) string: \(string) original date:\(self)")
             return nil
         }
         
@@ -45,14 +61,39 @@ public extension NSDate{
     
     static func psoDate(withNumberFormat numberFormat: Int, andCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate?{
         let string = String(numberFormat)
+        let characterCount = string.characters.count
         
-        guard string.characters.count == 15 else{
-            print("Could not create date with number format, incorrect number of characters, need 14, supplied: \(string.characters.count) number:\(numberFormat)")
+        
+        guard [14,18].contains(characterCount) else{
+            print("Could not create date with number format, incorrect number of characters supplied: \(string.characters.count) number:\(numberFormat)")
             return nil
         }
         
-        var startIndex = string.startIndex.advancedBy(1)
-        var endIndex = startIndex.advancedBy(4)
+        let oldFormat = characterCount == 14
+        if oldFormat {
+            guard calendar.calendarIdentifier == NSCalendarIdentifierGregorian else{
+                print("WARNING: Old format date number must use gregorian calendar")
+                return nil
+            }
+        }
+        
+        
+        
+        var startIndex = string.startIndex
+        var endIndex = string.startIndex
+        
+        let era: String
+        if !oldFormat{
+            startIndex = string.startIndex.advancedBy(1)
+            endIndex = startIndex.advancedBy(3)
+            era = string.substringWithRange(startIndex ..< endIndex)
+        }
+        else{
+            era = "0"
+        }
+        
+        startIndex = endIndex
+        endIndex = startIndex.advancedBy(4)
         let year = string.substringWithRange(startIndex ..< endIndex)
         
         startIndex = endIndex
@@ -75,11 +116,14 @@ public extension NSDate{
         endIndex = endIndex.advancedBy(2)
         let second = string.substringWithRange(startIndex ..< endIndex)
         
-        guard let yearNmbr = Int(year), monthNmbr = Int(month), dayNmbr = Int(day), hourNmbr = Int(hour), minuteNmbr = Int(minute), secondNmbr = Int(second) else {
+        guard let eraNmbr = Int(era), yearNmbr = Int(year), monthNmbr = Int(month), dayNmbr = Int(day), hourNmbr = Int(hour), minuteNmbr = Int(minute), secondNmbr = Int(second) else {
             return nil
         }
         
         let components = NSDateComponents()
+        if !oldFormat {
+            components.era = eraNmbr
+        }
         components.year = yearNmbr
         components.month = monthNmbr
         components.day = dayNmbr
@@ -87,5 +131,11 @@ public extension NSDate{
         components.minute = minuteNmbr
         components.second = secondNmbr
         return calendar.dateFromComponents(components)
+    }
+}
+
+extension NSDateComponents{
+    func psoPrintDescription() -> String{
+        return "Era: \(era)\nYear: \(year), Month: \(month), Day: \(day)\nHour: \(hour), Minutes: \(minute), Seconds: \(second)"
     }
 }
