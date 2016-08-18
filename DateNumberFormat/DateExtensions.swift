@@ -8,47 +8,107 @@
 
 import Foundation
 
-extension String {
+/// This extension allows us to `throw` a string.
+extension String : ErrorType { }
+
+// Convenience extension for using psoStringByPaddingLeft on ints.
+extension Int {
     func psoStringByPaddingLeft(toLength length: Int, withString string: String) -> String {
+        return "\(self)".stringByPaddingLeft(toLength: length, withString: string)
+    }
+}
+
+// Provides us with a way to pad a string to the left.
+extension String {
+
+    /**
+     Given a string of length n, pad it to `length` by adding `string` to the left until we reach lenght.
+     If we're given a string with length < than the provided length, we trim the given string.
+
+     - parameter length: the total length after padding
+     - parameter string: the pad
+
+     - returns: a string of provided length with padding if necessary
+     */
+    func stringByPaddingLeft(toLength length: Int, withString string: String) -> String {
+
         let padLength = length - self.characters.count
         guard padLength > -1 else {
             return self.stringByPaddingToLength(length, withString: string, startingAtIndex: 0)
         }
-        
-        
+
         return "".stringByPaddingToLength(padLength, withString: string, startingAtIndex: 0) + self
     }
-    
+}
+
+extension NSDateComponents {
+
+    func psoString(unit: NSCalendarUnit) throws -> String {
+
+        switch unit {
+
+        case NSCalendarUnit.Year:
+            return self.year.psoStringByPaddingLeft(toLength: 4, withString: "0")
+
+        case NSCalendarUnit.Month:
+            return self.month.psoStringByPaddingLeft(toLength: 2, withString: "0")
+
+        case NSCalendarUnit.Day:
+            return self.day.psoStringByPaddingLeft(toLength: 2, withString: "0")
+
+        case NSCalendarUnit.Hour:
+            return self.hour.psoStringByPaddingLeft(toLength: 2, withString: "0")
+
+        case NSCalendarUnit.Minute:
+            return self.minute.psoStringByPaddingLeft(toLength: 2, withString: "0")
+
+        case NSCalendarUnit.Second:
+            return self.second.psoStringByPaddingLeft(toLength: 2, withString: "0")
+
+        default:
+            throw "Only Year, Month, Day, Hour, Minute and Second are supported"
+        }
+    }
 }
 
 
-public extension NSDate{
-    func psoNumberFormat(withCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> Int?{
+public extension NSDate {
+
+    func psoNumber(usingCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) throws -> Int {
+
         let components = calendar.components([.Day, .Month, .Year, .Hour, .Minute, .Second], fromDate: self)
-        
-        let year = "\(components.year)".psoStringByPaddingLeft(toLength: 4, withString: "0")
-        let month = "\(components.month)".psoStringByPaddingLeft(toLength: 2, withString: "0")
-        let day = "\(components.day)".psoStringByPaddingLeft(toLength: 2, withString: "0")
-        let hour = "\(components.hour)".psoStringByPaddingLeft(toLength: 2, withString: "0")
-        let minutes = "\(components.minute)".psoStringByPaddingLeft(toLength: 2, withString: "0")
-        let seconds = "\(components.second)".psoStringByPaddingLeft(toLength: 2, withString: "0")
-        
-        let string = year + month + day + hour + minutes + seconds
-        
-        guard string.characters.count == 14 else{
-            print("Incorrect number of characters in NSDate Number Format should be 14, currently: \(string.characters.count) string: \(string) original date:\(self)")
-            return nil
+
+        do {
+            let year = try components.psoString(.Year)
+            let month = try components.psoString(.Month)
+            let day = try components.psoString(.Day)
+            let hour = try components.psoString(.Hour)
+            let minutes = try components.psoString(.Minute)
+            let seconds = try components.psoString(.Second)
+            
+            let psoNumberString = year + month + day + hour + minutes + seconds
+            
+            guard psoNumberString.characters.count == 14 else {
+                throw "Incorrect number of characters in NSDate Number Format should be 14, currently: \(psoNumberString.characters.count) string: \(psoNumberString) original date:\(self)"
+            }
+
+            guard let psoNumber = Int(psoNumberString) else {
+                throw "Resulting psoNumber is not a valid integer"
+            }
+            
+            return psoNumber
         }
-        
-        return Int(string)
+
+        catch {
+            throw "\(error)"
+        }
     }
     
-    static func psoDate(withNumberFormat numberFormat: Int, andCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate?{
+    static func psoDate(withNumberFormat numberFormat: Int, andCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) throws -> NSDate {
+
         let string = String(numberFormat)
-        
         guard string.characters.count == 14 else{
-            print("Could not create date with number format, incorrect number of characters, need 14, supplied: \(string.characters.count) number:\(numberFormat)")
-            return nil
+            throw "Could not create date with number format, incorrect number of characters, need 14, supplied: \(string.characters.count) number:\(numberFormat)"
         }
         
         var startIndex = string.startIndex
@@ -76,7 +136,7 @@ public extension NSDate{
         let second = string.substringWithRange(startIndex ..< endIndex)
         
         guard let yearNmbr = Int(year), monthNmbr = Int(month), dayNmbr = Int(day), hourNmbr = Int(hour), minuteNmbr = Int(minute), secondNmbr = Int(second) else {
-            return nil
+            throw "Given number format is not a valid Int after processing"
         }
         
         let components = NSDateComponents()
@@ -86,6 +146,11 @@ public extension NSDate{
         components.hour = hourNmbr
         components.minute = minuteNmbr
         components.second = secondNmbr
-        return NSCalendar.currentCalendar().dateFromComponents(components)
+
+        guard let date = NSCalendar.currentCalendar().dateFromComponents(components) else {
+            throw "Given number format is not a valid date"
+        }
+
+        return date
     }
 }
