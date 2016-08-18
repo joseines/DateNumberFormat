@@ -23,7 +23,7 @@ extension String {
 
 
 public extension NSDate{
-    func psoNumberFormat(withCalendar calendar: NSCalendar = NSCalendar.currentCalendar(), useOldFormat: Bool = false) -> Int?{
+    func psoNumberFormat(withCalendar calendar: NSCalendar = NSCalendar.currentCalendar(), useOldFormat: Bool = false) -> Int64?{
         
         if useOldFormat {
             guard calendar.calendarIdentifier == NSCalendarIdentifierGregorian else{
@@ -56,10 +56,10 @@ public extension NSDate{
             return nil
         }
         
-        return Int(string)
+        return Int64(string)
     }
     
-    static func psoDate(withNumberFormat numberFormat: Int, withCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate?{
+    static func psoDate(withNumberFormat numberFormat: Int64, withCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate?{
         let string = String(numberFormat)
         let characterCount = string.characters.count
         
