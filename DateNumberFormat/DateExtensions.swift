@@ -104,7 +104,7 @@ public extension NSDate {
         }
     }
 
-    convenience init(numberFormat: Int, calendar: NSCalendar) throws {
+    convenience init(numberFormat: Int, calendar: NSCalendar = NSCalendar.currentCalendar()) throws {
         let string = String(numberFormat)
         guard string.characters.count == 14 else{
             throw "Could not create date with number format, incorrect number of characters, need 14, supplied: \(string.characters.count) number:\(numberFormat)"

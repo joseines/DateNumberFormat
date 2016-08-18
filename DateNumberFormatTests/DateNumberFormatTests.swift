@@ -56,7 +56,7 @@ class DateNumberFormatTests: XCTestCase {
         for identifier in identifierArray{
             guard let calendar = NSCalendar(calendarIdentifier: identifier) else{
                 failedCalendars.append(identifier)
-                
+                return
             }
             
             if test(withCalendar: calendar) == false{
@@ -79,13 +79,13 @@ class DateNumberFormatTests: XCTestCase {
         let originalDate = NSDate()
         
         // CONVERTIR A NUMERO
-        guard let numberFormat = originalDate.psoNumberFormat(withCalendar: calendar) else{
+        guard let numberFormat = try? originalDate.psoNumber() else{
             return false
         }
         
         
         // CONVERTIR A FECHA DE REGRESO
-        guard let newDate = NSDate.psoDate(withNumberFormat: numberFormat) else{
+        guard let newDate = try? NSDate(numberFormat: numberFormat) else {
             return false
         }
         

@@ -16,7 +16,6 @@
 		89E0BD341D64DC91000C7ADC /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 89E0BD331D64DC91000C7ADC /* .gitignore */; };
 		89E0BD351D64DC91000C7ADC /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 89E0BD331D64DC91000C7ADC /* .gitignore */; };
 		89E0BD371D64DE15000C7ADC /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89E0BD361D64DE15000C7ADC /* DateExtensions.swift */; };
-		89E0BD381D64DE15000C7ADC /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89E0BD361D64DE15000C7ADC /* DateExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -218,7 +217,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				89E0BD291D64DC2F000C7ADC /* DateNumberFormatTests.swift in Sources */,
-				89E0BD381D64DE15000C7ADC /* DateExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +398,7 @@
 				89E0BD2F1D64DC2F000C7ADC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		89E0BD301D64DC2F000C7ADC /* Build configuration list for PBXNativeTarget "DateNumberFormatTests" */ = {
 			isa = XCConfigurationList;
@@ -408,6 +407,7 @@
 				89E0BD321D64DC2F000C7ADC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
