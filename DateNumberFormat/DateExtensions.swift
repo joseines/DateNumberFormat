@@ -103,42 +103,41 @@ public extension NSDate {
             throw "\(error)"
         }
     }
-    
-    static func psoDate(withNumberFormat numberFormat: Int, andCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) throws -> NSDate {
 
+    convenience init(numberFormat: Int, calendar: NSCalendar) throws {
         let string = String(numberFormat)
         guard string.characters.count == 14 else{
             throw "Could not create date with number format, incorrect number of characters, need 14, supplied: \(string.characters.count) number:\(numberFormat)"
         }
-        
+
         var startIndex = string.startIndex
         var endIndex = startIndex.advancedBy(4)
         let year = string.substringWithRange(startIndex ..< endIndex)
-        
+
         startIndex = endIndex
         endIndex = endIndex.advancedBy(2)
         let month = string.substringWithRange(startIndex ..< endIndex)
-        
+
         startIndex = endIndex
         endIndex = endIndex.advancedBy(2)
         let day = string.substringWithRange(startIndex ..< endIndex)
-        
+
         startIndex = endIndex
         endIndex = endIndex.advancedBy(2)
         let hour = string.substringWithRange(startIndex ..< endIndex)
-        
+
         startIndex = endIndex
         endIndex = endIndex.advancedBy(2)
         let minute = string.substringWithRange(startIndex ..< endIndex)
-        
+
         startIndex = endIndex
         endIndex = endIndex.advancedBy(2)
         let second = string.substringWithRange(startIndex ..< endIndex)
-        
+
         guard let yearNmbr = Int(year), monthNmbr = Int(month), dayNmbr = Int(day), hourNmbr = Int(hour), minuteNmbr = Int(minute), secondNmbr = Int(second) else {
             throw "Given number format is not a valid Int after processing"
         }
-        
+
         let components = NSDateComponents()
         components.year = yearNmbr
         components.month = monthNmbr
@@ -147,10 +146,11 @@ public extension NSDate {
         components.minute = minuteNmbr
         components.second = secondNmbr
 
-        guard let date = NSCalendar.currentCalendar().dateFromComponents(components) else {
+        guard let date = calendar.dateFromComponents(components) else {
             throw "Given number format is not a valid date"
         }
 
-        return date
+        self.init(timeIntervalSince1970: date.timeIntervalSince1970)
     }
+
 }
