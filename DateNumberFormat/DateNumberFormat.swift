@@ -23,7 +23,9 @@ extension String {
 
 
 public extension NSDate{
-    func psoNumberFormat(withCalendar calendar: NSCalendar = NSCalendar.currentCalendar(), useOldFormat: Bool = false) -> Int64?{
+    
+    /// returns an Int64 representing the date, human readable. Old format only works with gregorian calendar, the default is old format.
+    func psoNumberFormat(withCalendar calendar: NSCalendar = NSCalendar.currentCalendar(), useOldFormat: Bool = true) -> Int64?{
         
         if useOldFormat {
             guard calendar.calendarIdentifier == NSCalendarIdentifierGregorian else{
@@ -59,9 +61,24 @@ public extension NSDate{
         return Int64(string)
     }
     
+    convenience init?(withNumberFormat numberFormat: Int64, withCalendar calendar: NSCalendar = NSCalendar.currentCalendar()){
+        if let date = NSDate.psoDate(withNumberFormat: numberFormat, withCalendar: calendar){
+            self.init(timeIntervalSince1970: date.timeIntervalSince1970)
+        }
+        else{
+            return nil
+        }
+        
+    }
+    
     static func psoDate(withNumberFormat numberFormat: Int64, withCalendar calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate?{
-        let string = String(numberFormat)
-        let characterCount = string.characters.count
+        var string = String(numberFormat)
+        var characterCount = string.characters.count
+        
+        if characterCount == 11 {
+            string = "00" + string
+            characterCount = string.characters.count
+        }
         
         
         guard [14,18].contains(characterCount) else{
