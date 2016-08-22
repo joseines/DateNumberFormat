@@ -8,6 +8,15 @@
 
 import Foundation
 
+public func psoDispatch_sync_to_main_queue(dispatch_Block: () -> Void){
+    if NSThread.isMainThread() == true {
+        dispatch_Block()
+    }
+    else{
+        dispatch_sync(dispatch_get_main_queue(), dispatch_Block)
+    }
+}
+
 extension String {
     
     // Adds the string supplied to the left of the string until it meets the lenght specified, if the lenght passed is less than the size of the string, it will return a substring
